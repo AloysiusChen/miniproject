@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - FinanceWise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">FinanceWise</a>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="alert alert-warning">
+            <strong>⚠️ Warning:</strong> This API is for approved users only.
+        </div>
+
+        <h1 class="mb-4">API Documentation</h1>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Recommendation</h5>
+            </div>
+            <div class="card-body">
+                <h6>Endpoint</h6>
+                <code>POST /api/recommendations</code>
+
+                <h6 class="mt-4">Request Format</h6>
+                <p><strong>Content-Type:</strong> application/json</p>
+
+                <h6>Example Request Body:</h6>
+                <pre class="bg-light p-3 border rounded"><code>{
+    "title": "Emergency Fund",
+    "content": "Build 6 months of emergency savings",
+    "ageMin": "18",
+    "ageMax": "65",
+    "dependents": "NONE",
+    "links": [
+        {
+            "title": "Learn More",
+            "url": "https://example.com/emergency-fund"
+        }
+    ]
+}</code></pre>
+
+                <h6 class="mt-4">Response Format</h6>
+                <p>Success Response (200 OK):</p>
+                <pre class="bg-light p-3 border rounded"><code>{
+    "message": "Recommendation added successfully",
+    "id": "generated-unique-id"
+}</code></pre>
+
+                <h6 class="mt-4">Parameters</h6>
+                <dl class="row">
+                    <dt class="col-sm-3">title (required)</dt>
+                    <dd class="col-sm-9">The title of the recommendation.</dd>
+
+                    <dt class="col-sm-3">content (required)</dt>
+                    <dd class="col-sm-9">A detailed description or content for the recommendation.</dd>
+
+                    <dt class="col-sm-3">ageMin (optional)</dt>
+                    <dd class="col-sm-9">The minimum age for which the recommendation is relevant.</dd>
+
+                    <dt class="col-sm-3">ageMax (optional)</dt>
+                    <dd class="col-sm-9">The maximum age for which the recommendation is relevant.</dd>
+
+                    <dt class="col-sm-3">dependents (optional)</dt>
+                    <dd class="col-sm-9">
+                        The dependent type this recommendation is relevant for. Possible values:
+                        <ul class="list-unstyled mt-2">
+                            <li><code>"NONE"</code> - For users with no dependents</li>
+                            <li><code>"CHILDREN"</code> - For users with children</li>
+                            <li><code>"PARENTS"</code> - For users with parents</li>
+                            <li><code>"BOTH"</code> - For users with both children and parents</li>
+                        </ul>
+                    </dd>
+
+                    <dt class="col-sm-3">links (optional)</dt>
+                    <dd class="col-sm-9">
+                        A list of recommendation links, each containing:
+                        <ul class="list-unstyled mt-2">
+                            <li><code>title</code> (string): The title of the link</li>
+                            <li><code>url</code> (string): The URL for the link</li>
+                        </ul>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protection & Growth - FinanceWise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">FinanceWise</a>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" href="/market-pulse">Market Pulse</a>
+                <a class="nav-link" href="/smart-moves">Smart Moves</a>
+                <a class="nav-link active" href="/portfolio-and-goals">Protection & Growth</a>
+            </div>
+            <div class="navbar-text text-white">
+                Welcome, <span th:text="${user.email}"></span>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-link nav-link text-white">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show mb-4">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Financial Targets Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Money Goals</h2>
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="p-3 bg-light rounded">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h3 class="h5 mb-0">Emergency Fund Target</h3>
+                                        <button type="button" class="btn btn-link text-dark p-0" data-bs-toggle="modal"
+                                            data-bs-target="#emergencyFundModal">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                    <div class="h3 text-primary mb-2">
+                                        $[[${#numbers.formatDecimal(financialTargets.emergencyFund, 0, 'COMMA', 2,
+                                        'POINT')}]]
+                                    </div>
+                                    <small class="text-muted">6 months’ worth of expenses</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12" th:if="${user.profile.age < 65}">
+                                <div class="p-3 bg-light rounded">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h3 class="h5 mb-0">Monthly Investment Target</h3>
+                                        <button type="button" class="btn btn-link text-dark p-0" data-bs-toggle="modal"
+                                            data-bs-target="#investmentModal">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                    <div class="h3 text-primary mb-2">
+                                        $[[${#numbers.formatDecimal(financialTargets.monthlyInvestment, 0, 'COMMA', 2,
+                                        'POINT')}]]
+                                    </div>
+                                    <small class="text-muted">10% of your monthly take-home pay</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7" th:if="${user.profile.age < 65}">
+                        <div class="p-3 bg-light rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h3 class="h5 mb-0">Insurance Coverage Progress</h3>
+                                <button type="button" class="btn btn-link text-dark p-0" data-bs-toggle="modal"
+                                    data-bs-target="#insuranceModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="mb-3">Death & TPD Insurance</h6>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        th:style="'width: ' + ${deathTpdProgress.progressPercentage} + '%'"
+                                        th:attr="aria-valuenow=${deathTpdProgress.progressPercentage}" aria-valuemin="0"
+                                        aria-valuemax="100">
+                                        [[${deathTpdProgress.progressPercentage}]]%
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Current Coverage</small>
+                                        <div class="h6">$[[${#numbers.formatDecimal(deathTpdProgress.currentAmount, 0,
+                                            'COMMA', 2, 'POINT')}]]</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Target Coverage</small>
+                                        <div class="h6">$[[${#numbers.formatDecimal(deathTpdProgress.targetAmount, 0,
+                                            'COMMA', 2, 'POINT')}]]</div>
+                                    </div>
+                                    <div class="col-md-4" th:if="${deathTpdProgress.shortfall > 0}">
+                                        <small class="text-danger d-block">Coverage Gap</small>
+                                        <div class="h6 text-danger">
+                                            $[[${#numbers.formatDecimal(deathTpdProgress.shortfall, 0, 'COMMA', 2,
+                                            'POINT')}]]</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h6 class="mb-3">Critical Illness Insurance</h6>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        th:style="'width: ' + ${ciProgress.progressPercentage} + '%'"
+                                        th:attr="aria-valuenow=${ciProgress.progressPercentage}" aria-valuemin="0"
+                                        aria-valuemax="100">
+                                        [[${ciProgress.progressPercentage}]]%
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Current Coverage</small>
+                                        <div class="h6">$[[${#numbers.formatDecimal(ciProgress.currentAmount, 0,
+                                            'COMMA', 2, 'POINT')}]]</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Target Coverage</small>
+                                        <div class="h6">$[[${#numbers.formatDecimal(ciProgress.targetAmount, 0, 'COMMA',
+                                            2, 'POINT')}]]</div>
+                                    </div>
+                                    <div class="col-md-4" th:if="${ciProgress.shortfall > 0}">
+                                        <small class="text-danger d-block">Coverage Gap</small>
+                                        <div class="h6 text-danger">$[[${#numbers.formatDecimal(ciProgress.shortfall, 0,
+                                            'COMMA', 2, 'POINT')}]]</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Portfolio Section -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="mb-4">My Protection & Growth</h2>
+                <div class="row">
+                    <!-- Insurance Section -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="h4 mb-0">Insurance Policies</h3>
+                            <a href="/portfolio/insurance/add" class="btn btn-primary btn-sm">Add Insurance</a>
+                        </div>
+                        <div class="list-group">
+                            <div th:each="insurance : ${insurances}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="w-100">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <h5 class="mb-1" th:text="${insurance.planName}">Plan Name</h5>
+                                            <div class="btn-group">
+                                                <a th:href="@{'/portfolio/insurance/' + ${insurance.id} + '/edit'}"
+                                                    class="btn btn-outline-primary btn-sm">Edit</a>
+                                                <form
+                                                    th:action="@{'/portfolio/insurance/' + ${insurance.id} + '/delete'}"
+                                                    method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                        onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 text-muted small">
+                                            <div class="col-6">
+                                                <strong>Company:</strong>
+                                                <span th:text="${insurance.company}">Company</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Type:</strong>
+                                                <span th:text="${insurance.coverageType}">Type</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Coverage:</strong>
+                                                $<span
+                                                    th:text="${#numbers.formatDecimal(insurance.coverageAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Premium:</strong>
+                                                $<span
+                                                    th:text="${#numbers.formatDecimal(insurance.premiumAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                                <span class="text-muted"
+                                                    th:text="'(' + ${insurance.premiumFrequency} + ')'">Frequency</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Next Payment:</strong>
+                                                <span
+                                                    th:text="${#temporals.format(insurance.nextPaymentDate, 'dd MMM yyyy')}">Date</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Coverage End:</strong>
+                                                <span
+                                                    th:text="${#temporals.format(insurance.coverageEndDate, 'dd MMM yyyy')}">Date</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Section -->
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="h4 mb-0">Investments</h3>
+                            <a href="/portfolio/investment/add" class="btn btn-primary btn-sm">Add Investment</a>
+                        </div>
+                        <div class="list-group">
+                            <div th:each="investment : ${investments}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="w-100">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <h5 class="mb-1" th:text="${investment.investmentName}">Investment Name</h5>
+                                            <div class="btn-group">
+                                                <a th:href="@{'/portfolio/investment/' + ${investment.id} + '/edit'}"
+                                                    class="btn btn-outline-primary btn-sm">Edit</a>
+                                                <form
+                                                    th:action="@{'/portfolio/investment/' + ${investment.id} + '/delete'}"
+                                                    method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                        onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-2 text-muted small">
+                                            <div class="col-6">
+                                                <strong>Type:</strong>
+                                                <span th:text="${investment.investmentType}">Type</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>Amount Invested:</strong>
+                                                $<span
+                                                    th:text="${#numbers.formatDecimal(investment.amountInvested, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                            </div>
+                                            <div class="col-6" th:if="${investment.units != null}">
+                                                <strong>Units:</strong>
+                                                <span
+                                                    th:text="${#numbers.formatDecimal(investment.units, 0, 'COMMA', 2, 'POINT')}">0</span>
+                                            </div>
+                                            <div class="col-12"
+                                                th:if="${investment.additionalComments != null and !investment.additionalComments.empty}">
+                                                <strong>Comments:</strong>
+                                                <span th:text="${investment.additionalComments}">Comments</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Emergency Fund Modal -->
+                    <div class="modal fade" id="emergencyFundModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Emergency Fund Recommendations</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Consider keeping money in a combination of:</p>
+                                    <ul>
+                                        <li>Savings Accounts</li>
+                                        <li>Singapore Savings Bonds (SSBs)*</li>
+                                    </ul>
+                                    <p>*SSBs are guaranteed by the Government. You can exit your investment in any given
+                                        month without penalty.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insurance Modal -->
+                    <div class="modal fade" id="insuranceModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Insurance Coverage Recommendations</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <ul>
+                                        <li><strong>Death & Total Permanent Disability:</strong> 9x annual income</li>
+                                        <li><strong>Critical illness:</strong> 4x annual income</li>
+                                    </ul>
+                                    <p>Spend at most 15% of take-home pay* on insurance protection.</p>
+                                    <p>*Purchase of bundled products (e.g. Whole Life Insurance) may exceed 15% of
+                                        take-home
+                                        pay as they contain both investment and protection elements.</p>
+                                    <p>Consider Term Insurance Plans for affordable protection.</p>
+                                    <a href="https://www.go.gov.sg/compare" target="_blank"
+                                        class="btn btn-primary mt-2">Compare
+                                        Insurance Plans</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Modal -->
+                    <div class="modal fade" id="investmentModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Investment Recommendations</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h6>Consider:</h6>
+                                    <p><strong>Short-term:</strong></p>
+                                    <ul>
+                                        <li>Singapore Savings Bonds</li>
+                                        <li>T-bills</li>
+                                        <li>Fixed Deposits</li>
+                                    </ul>
+                                    <p><strong>Long-term:</strong></p>
+                                    <ul>
+                                        <li>CPF top-ups</li>
+                                        <li>Diversified Exchange Traded Funds</li>
+                                        <li>Unit Trusts</li>
+                                    </ul>
+                                    <a href="https://www.go.gov.sg/investments" target="_blank"
+                                        class="btn btn-primary mt-2">Learn
+                                        More About Investments</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
